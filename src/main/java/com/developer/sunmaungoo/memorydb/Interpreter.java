@@ -2,6 +2,7 @@ package com.developer.sunmaungoo.memorydb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Interpreter {
 
@@ -13,6 +14,8 @@ public class Interpreter {
 	  
 	private final String FROM_KEYWORD = "FROM";
 	
+	private final String FILTER_KEYWORD = "WHERE";
+	
 	private Token currentToken;
 	
 	private String[] tokenBlock;
@@ -21,6 +24,8 @@ public class Interpreter {
 	
 	private List<String> selectionColumns;
 	
+	private List<FilterPredicate> filterPredicates;
+		
 	private String tableName;
 	
 	/**
@@ -37,6 +42,7 @@ public class Interpreter {
 	
 		this.selectionColumns = new ArrayList<String>();
 		
+		this.filterPredicates = new ArrayList<FilterPredicate>();
 	}
 	
 	/**
@@ -57,27 +63,15 @@ public class Interpreter {
 			return false;
 		}
 				
-		selectionColumns = createList(currentToken.getValue());
-				
 		//selection column
+
+		Optional<List<String>> output = createListValue();
 		
-		//checking if there is a minimum of 1 selection column
-		
-		if(!eat(TokenType.LIST_VALUE)) {
+		if(!output.isPresent()) {
 			return false;
 		}
 		
-		//to handle the case where there is comma
-		//after space in selection column
-
-		List<String> tmp = createList(currentToken.getValue());
-		
-		while(eat(TokenType.LIST_VALUE)) {
-			
-			selectionColumns.addAll(tmp);
-			
-			tmp = createList(currentToken.getValue());
-		}
+		selectionColumns = output.get();
 		
 		if(!eat(TokenType.FROM)) {
 			return false;
@@ -94,6 +88,29 @@ public class Interpreter {
 		if(!eat(TokenType.LIST_VALUE)) {
 			return false;
 		}
+		
+		
+		//if it is a WHERE statement
+		
+		if(eat(TokenType.FILTER)) {
+			
+			//get all the filters we have to perform
+			
+			output = createListValue();
+			
+			if(!output.isPresent()) {				
+				return false;
+			}
+						
+			FilterInterpreter filterInterprerter = new FilterInterpreter(output.get());
+			
+			if(!filterInterprerter.interpret()) {
+				return false;
+			}
+			
+			filterPredicates = filterInterprerter.getPredicate();
+		}
+		
 		
 		if(currentToken.getType()!=TokenType.EOF) {
 			return false;
@@ -118,6 +135,14 @@ public class Interpreter {
 		return selectionColumns;
 	}
 	
+	public List<FilterPredicate> getFilters(){
+		return filterPredicates;
+	}
+	
+	public boolean hasFilter() {
+		return filterPredicates.size()>0;
+	}
+	
 	public Token getNextToken() {
 		
 		//move to next position
@@ -138,6 +163,10 @@ public class Interpreter {
 			
 			return new Token(TokenType.FROM, null);
 
+		}else if(currentExpression.contentEquals(FILTER_KEYWORD)) {
+			
+			return new Token(TokenType.FILTER, null);
+			
 		}
 		
 		return new Token(TokenType.LIST_VALUE, currentExpression);
@@ -170,6 +199,33 @@ public class Interpreter {
 		return null;
 	}
 	
+	private Optional<List<String>> createListValue(){
+		
+		List<String> output = createList(currentToken.getValue());
+		
+		//selection column
+		
+		//checking if there is a minimum of 1 selection column
+		
+		if(!eat(TokenType.LIST_VALUE)) {
+			return Optional.empty();
+		}
+		
+		//to handle the case where there is comma
+		//after space in selection column
+
+		List<String> tmp = createList(currentToken.getValue());
+		
+		while(eat(TokenType.LIST_VALUE)) {
+			
+			output.addAll(tmp);
+			
+			tmp = createList(currentToken.getValue());
+		}
+		
+		return Optional.of(output);
+	}
+		
 	/**
 	 * Get next token if the current token type are same
 	 * @param tokenType

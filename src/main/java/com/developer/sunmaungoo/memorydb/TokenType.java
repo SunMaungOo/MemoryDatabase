@@ -10,5 +10,6 @@ public enum TokenType {
 	 * C1
 	 * C1,C2
 	 */
-	LIST_VALUE
+	LIST_VALUE,
+	FILTER,
 }

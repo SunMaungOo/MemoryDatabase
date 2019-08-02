@@ -131,5 +131,61 @@ public class InterpreterTests {
 			
 	}
 	
+	@Test
+	void interpretTest9() {
+		
+		Interpreter interpreter=new Interpreter("SELECT C1, C2 , C3 FROM T1 WHERE C1 == 10");
+		
+		assertTrue(interpreter.interpret());
+		
+		List<String> selectionColumns = interpreter.getSelectionColumns();
+				
+		assertTrue(selectionColumns.size()==3);
+		assertTrue(selectionColumns.get(0).contentEquals("C1"));
+		assertTrue(selectionColumns.get(1).contentEquals("C2"));
+		assertTrue(selectionColumns.get(2).contentEquals("C3"));
+
+		String tableName = interpreter.getTableName();
+		
+		assertNotNull(tableName);
+		
+		assertTrue(tableName.contentEquals("T1"));
+		
+		assertTrue(interpreter.hasFilter());
+		
+		List<FilterPredicate> filters = interpreter.getFilters();
+		
+		assertTrue(filters.size()==1);
+	
+	}
+	
+	@Test
+	void interpretTest10() {
+		
+		Interpreter interpreter=new Interpreter("SELECT C1, C2 , C3 FROM T1 WHERE C1 == 10 AND C2 != 20");
+		
+		assertTrue(interpreter.interpret());
+		
+		List<String> selectionColumns = interpreter.getSelectionColumns();
+				
+		assertTrue(selectionColumns.size()==3);
+		assertTrue(selectionColumns.get(0).contentEquals("C1"));
+		assertTrue(selectionColumns.get(1).contentEquals("C2"));
+		assertTrue(selectionColumns.get(2).contentEquals("C3"));
+
+		String tableName = interpreter.getTableName();
+		
+		assertNotNull(tableName);
+		
+		assertTrue(tableName.contentEquals("T1"));
+		
+		assertTrue(interpreter.hasFilter());
+		
+		List<FilterPredicate> filters = interpreter.getFilters();
+		
+		assertTrue(filters.size()==2);
+	
+	}
+	
 	
 }
