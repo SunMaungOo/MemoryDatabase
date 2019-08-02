@@ -76,6 +76,7 @@ public class Interpreter {
 			
 			selectionColumns.addAll(tmp);
 			
+			tmp = createList(currentToken.getValue());
 		}
 		
 		if(!eat(TokenType.FROM)) {
