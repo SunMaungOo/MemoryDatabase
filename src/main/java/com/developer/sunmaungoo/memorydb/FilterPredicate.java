@@ -9,12 +9,17 @@ public class FilterPredicate {
 	
 	private BiPredicate<String, String> predicate;
 	
+	private String columnName;
+	
 	public FilterPredicate(Modifer modifer,
-			BiPredicate<String, String> predicate) {
+			BiPredicate<String, String> predicate,
+			String columnName) {
 		
 		this.modifer = modifer;
 		
 		this.predicate = predicate;
+		
+		this.columnName = columnName;
 	}
 	public Modifer getModifer() {
 		
@@ -25,5 +30,13 @@ public class FilterPredicate {
 	public BiPredicate<String, String> getPredicate(){
 		
 		return predicate;
+	}
+	
+	/**
+	 * 
+	 * @return column name the predicate test upon
+	 */
+	public String getColumnName() {
+		return columnName;
 	}
 }

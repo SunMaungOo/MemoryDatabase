@@ -57,7 +57,8 @@ public class Grid {
 
 	}
 	
-	public List<List<String>> getRows(List<String> columnNames){
+	public List<List<String>> getRows(List<String> columnNames,
+			List<FilterPredicate> predicates){
 		
 		List<Integer> indexes = getIndexes(columnNames);
 		
@@ -77,6 +78,10 @@ public class Grid {
 
 			List<String> currentRow = rows.get(rowIndex);
 
+			if(!isAddRow(currentRow, predicates)) {
+				continue;
+			}
+			
 			for(int columnIndex=0;columnIndex<currentRow.size();columnIndex++) { 		
 				
 				if(isSelectRow(columnIndex,indexes)) {
@@ -93,11 +98,115 @@ public class Grid {
 	}
 	
 	/**
-	 * Get all rows
+	 * Get all rows which satisfy the predicate
 	 * @return
 	 */
-	public List<List<String>> getRows(){
-		return rows;
+	public List<List<String>> getRows(List<FilterPredicate> predicates){
+		
+		if(!isValidFilter(predicates)) {
+			return rows;
+		}
+		
+		List<List<String>> filterRows = new ArrayList<List<String>>();
+		
+		for(List<String> currentRow : rows) {
+		
+			if(isAddRow(currentRow, predicates)) {
+				
+				filterRows.add(currentRow);
+				
+			}
+		}
+		
+		
+		return filterRows;
+	}
+	
+	private boolean isValidFilter(List<FilterPredicate> predicates) {
+		return predicates!=null && predicates.size()>0;
+	}
+	
+	/**
+	 * 
+	 * @param row
+	 * @param predicates
+	 * @return whether to add the row based on predicate
+	 */
+	private boolean isAddRow(List<String> row,
+			List<FilterPredicate> predicates) {
+		
+		if(!isValidFilter(predicates)) {
+			return true;
+		}
+		
+		boolean result = true;
+		
+		for(int i=0;i<predicates.size();i++) {
+			
+			FilterPredicate currentPredicate = predicates.get(i);
+				
+			result = test(row, currentPredicate);
+			
+			Modifer currentModifer = currentPredicate.getModifer();
+					
+			if(currentModifer==Modifer.NONE) {
+				continue;
+			}
+	
+			//if the modifier is not none,there is always next predicate
+
+			FilterPredicate nextPredicate = predicates.get(i+1);
+
+			boolean nextResult = test(row,nextPredicate);
+			
+			if(currentModifer==Modifer.OR) {
+				
+				result = result || nextResult;
+
+			}else if(currentModifer==Modifer.AND) {
+
+				result = result && nextResult;
+
+			}
+
+		}
+				
+		return result;
+	}
+	
+	/**
+	 * Test whether for the current row
+	 * @param row
+	 * @param predicate
+	 * @return
+	 */
+	private boolean test(List<String> row,FilterPredicate predicate) {
+		
+		int columnIndex = getColumnIndex(predicate.getColumnName());
+
+		if(columnIndex==-1) {
+			throw new IllegalArgumentException("Invalid column name found in predicate");
+		}
+		
+		return predicate.getPredicate().test(columns.get(columnIndex),
+				row.get(columnIndex));
+	}
+	
+	/**
+	 * 
+	 * @param columnName
+	 * @return column index or -1 if the column name is not found
+	 */
+	private int getColumnIndex(String columnName) {
+		
+		for(int i=0;i<columns.size();i++) {
+			
+			if(columns.get(i).contentEquals(columnName)) {
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 	
 	private boolean isSelectRow(int columnIndex,

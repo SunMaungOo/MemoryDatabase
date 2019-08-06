@@ -28,7 +28,8 @@ class FilterInterpreterTests {
 		assertTrue(predicate.size()==1);
 		
 		assertTrue(predicate.get(0).getPredicate().test("C1", "10"));
-		
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
+
 	}
 	
 	@Test
@@ -51,6 +52,8 @@ class FilterInterpreterTests {
 		
 		assertFalse(predicate.get(0).getPredicate().test("C1", "20"));
 		
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
+
 	}
 
 	@Test
@@ -73,6 +76,8 @@ class FilterInterpreterTests {
 		
 		assertTrue(predicate.get(0).getPredicate().test("C1", "2"));
 		
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
+
 	}
 	
 	@Test
@@ -95,6 +100,8 @@ class FilterInterpreterTests {
 		
 		assertFalse(predicate.get(0).getPredicate().test("C1", "10"));
 		
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
+
 	}
 	
 	@Test
@@ -120,7 +127,9 @@ class FilterInterpreterTests {
 		assertTrue(predicate.size()==2);
 		
 		assertTrue(predicate.get(0).getPredicate().test("C1", "10"));
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
 		assertTrue(predicate.get(1).getPredicate().test("C2", "20"));
+		assertTrue(predicate.get(1).getColumnName().contentEquals("C2"));
 
 	}
 	
@@ -147,7 +156,10 @@ class FilterInterpreterTests {
 		assertTrue(predicate.size()==2);
 		
 		assertTrue(predicate.get(0).getPredicate().test("C1", "10"));
+		assertTrue(predicate.get(0).getColumnName().contentEquals("C1"));
 		assertTrue(predicate.get(1).getPredicate().test("C2", "20"));
+		assertTrue(predicate.get(1).getColumnName().contentEquals("C2"));
+
 
 	}
 	
@@ -191,6 +203,8 @@ class FilterInterpreterTests {
 			
 			result = currentPredicate.test(testColumnName[i], testColumnValue[i]);
 			
+			assertTrue(predicate.get(i).getColumnName().contentEquals(testColumnName[i]));
+
 			Modifer currentModifer = predicate.get(i).getModifer();
 			
 			if(currentModifer!=Modifer.NONE) {
@@ -253,9 +267,11 @@ class FilterInterpreterTests {
 		for(int i=0;i<predicate.size();i++) {
 			
 			BiPredicate<String, String> currentPredicate = predicate.get(i).getPredicate();
-			
+				
 			result = currentPredicate.test(testColumnName[i], testColumnValue[i]);
 			
+			assertTrue(predicate.get(i).getColumnName().contentEquals(testColumnName[i]));
+
 			Modifer currentModifer = predicate.get(i).getModifer();
 			
 			if(currentModifer!=Modifer.NONE) {

@@ -43,16 +43,18 @@ public class DatabaseEngine {
 			return new ArrayList<List<String>>();
 		}
 		
+		List<FilterPredicate> predicates = interpreter.getFilters();
+		
 		List<String> columnNames = interpreter.getSelectionColumns();
 
 		if(columnNames.size()==1 && 
 				columnNames.get(0).contentEquals(WILD_CARD)) {
 			
-			return foundTable.get().getRows();
+			return foundTable.get().getRows(predicates);
 			
 		}
 		
-		return foundTable.get().getRows(columnNames);
+		return foundTable.get().getRows(columnNames,predicates);
 	}
 	
 	private Optional<Table> getTableName(String tableName) {

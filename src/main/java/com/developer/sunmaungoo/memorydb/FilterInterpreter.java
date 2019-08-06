@@ -73,7 +73,7 @@ public class FilterInterpreter {
 			if(eat(FilterType.EOF)) {
 								
 				filterPredicate.add(new FilterPredicate(Modifer.NONE,
-						predicate));
+						predicate,columnName));
 				
 				return true;
 			}
@@ -81,12 +81,12 @@ public class FilterInterpreter {
 			if(currentToken.getType()==FilterType.AND) {
 								
 				filterPredicate.add(new FilterPredicate(Modifer.AND,
-						predicate));
+						predicate,columnName));
 
 			}else if(currentToken.getType()==FilterType.OR) {
 								
 				filterPredicate.add(new FilterPredicate(Modifer.OR,
-						predicate));
+						predicate,columnName));
 
 			}
 			

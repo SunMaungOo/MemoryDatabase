@@ -31,14 +31,15 @@ public class Table {
 		return tableInfo.addRow(row);	
 	}
 	
-	public List<List<String>> getRows(List<String> columnNames){
+	public List<List<String>> getRows(List<String> columnNames,
+			List<FilterPredicate> predicates){
 		
-		return tableInfo.getRows(columnNames);	
+		return tableInfo.getRows(columnNames,predicates);	
 	}
 	
-	public List<List<String>> getRows(){
+	public List<List<String>> getRows(List<FilterPredicate> predicates){
 		
-		return tableInfo.getRows();
+		return tableInfo.getRows(predicates);
 		
 	}
 
