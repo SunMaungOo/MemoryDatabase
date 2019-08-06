@@ -107,8 +107,8 @@ public class FilterInterpreter {
 		return filterPredicate;
 	}
 	
-	private BiPredicate<String, String> createPredicate(boolean isEquals,
-			String columnName,String columnValue){
+	private BiPredicate<String, String> createPredicate(final boolean isEquals,
+			final String columnName,final String columnValue){
 		
 		
 		return new BiPredicate<String, String>() {
