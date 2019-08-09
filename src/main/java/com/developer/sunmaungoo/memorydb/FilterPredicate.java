@@ -1,5 +1,7 @@
 package com.developer.sunmaungoo.memorydb;
 
+import java.util.function.BiPredicate;
+
 public class FilterPredicate {
 
 	/**
